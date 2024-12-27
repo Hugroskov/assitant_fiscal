@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>IA Fiscalité - RAG + Chat avec Voix</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Lien Bootstrap (CDN) -->
+  <link 
+    rel="stylesheet" 
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+  >
+  <!-- Votre style personnalisé -->
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+      <span class="navbar-brand">IA Fiscalité</span>
+    </div>
+  </nav>
+
+  <div class="container my-4">
+    <!-- Section initiale : Première question (RAG) -->
+    <div id="firstQuestionSection">
+      <h1 class="text-center mb-4">Assistant Fiscal Français</h1>
+      <p class="text-center text-muted">
+        Posez votre <strong>première question</strong> : l’IA fera appel à la recherche dans sa base de connaissances du CGI.
+      </p>
+
+      <div class="row justify-content-center">
+        <div class="col-md-8">
+          <div class="mb-3">
+            <label for="questionInput" class="form-label fw-bold">Votre question :</label>
+            <div class="input-group">
+              <textarea 
+                class="form-control" 
+                id="questionInput" 
+                rows="4" 
+                placeholder="Ex: Comment optimiser mes revenus locatifs ?"
+              ></textarea>
+              <button 
+                class="btn btn-outline-secondary" 
+                id="micBtn" 
+                type="button" 
+                title="Parler"
+              >
+                🎤
+              </button>
+            </div>
+          </div>
+          <button 
+            id="askBtn" 
+            class="btn btn-primary btn-lg w-100"
+          >
+            Demander
+          </button>
+        </div>
+      </div>
+
+      <div class="row justify-content-center mt-4">
+        <div class="col-md-8">
+          <h2 class="h4">Réponse</h2>
+          <div 
+            id="answerBox" 
+            class="border p-3 rounded" 
+            style="min-height: 120px;"
+          >
+            <!-- La réponse initiale (RAG) s'affichera ici -->
+          </div>
+        </div>
+      </div>
+
+      <div class="row justify-content-center mt-3" id="continueRow" style="display: none;">
+        <div class="col-md-8 text-end">
+          <button 
+            id="continueBtn" 
+            class="btn btn-secondary"
+          >
+            Continuer la conversation
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section chat (cachée initialement) -->
+    <div class="chat-container" id="chatSection" style="display: none;">
+      <!-- Fenêtre de discussion -->
+      <div class="chat-window" id="chatWindow"></div>
+
+      <!-- Barre d'envoi de message en bas -->
+      <div class="chat-input-container">
+        <div class="input-group">
+          <textarea 
+            class="form-control" 
+            id="chatInput" 
+            rows="1" 
+            placeholder="Tapez votre message... (Enter pour envoyer)"
+          ></textarea>
+          <button 
+            class="btn btn-outline-secondary" 
+            id="micChatBtn" 
+            type="button" 
+            title="Parler"
+          >
+            🎤
+          </button>
+          <button 
+            class="btn btn-primary" 
+            id="sendChatBtn"
+          >
+            Envoyer
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- JS Bootstrap -->
+  <script 
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js">
+  </script>
+
+  <!-- Librairie Marked (pour convertir du Markdown en HTML) -->
+  <script 
+    src="https://cdn.jsdelivr.net/npm/marked/marked.min.js">
+  </script>
+
+  <!-- Script principal -->
+  <script src="/static/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,234 @@
+/* frontend/static/style.css */
+
+/* -------------------
+   Général
+   ------------------- */
+   body {
+    background-color: #f9f9f9;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    font-family: Arial, sans-serif;
+    margin: 0; /* Supprime les marges par défaut */
+  }
+  
+  .navbar {
+    margin-bottom: 20px;
+  }
+  
+  /* -------------------
+     Section de chat
+     ------------------- */
+  .chat-container {
+    display: flex;
+    flex-direction: column;
+    height: 80vh; /* Ajuster selon besoin */
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin: 16px; 
+    background-color: #fff;
+  }
+  
+  /* -------------------
+     Fenêtre de messages
+     ------------------- */
+  .chat-window {
+    flex: 1; /* Occupe tout l'espace disponible */
+    padding: 1rem;
+    overflow-y: auto; 
+    background-color: #f1f1f1;
+    border-bottom: 1px solid #ccc;
+    scroll-behavior: smooth; /* Pour un défilement fluide */
+    display: flex;
+    flex-direction: column; /* Empile les messages verticalement */
+  }
+  
+  /* -------------------
+     Bulle de message
+     ------------------- */
+  .message-bubble {
+    /* Alignement basé sur le rôle */
+    /* Par défaut, alignée à gauche (assistant) */
+    /* Pour l'utilisateur, align-self: flex-end; est utilisé */
+    
+    /* Assurez-vous que les bulles occupent la largeur nécessaire */
+    width: fit-content;
+  
+    /* Styles communs */
+    max-width: 60%; /* Limite la largeur max de la bulle */
+    padding: 10px 14px;
+    margin-bottom: 10px;
+    border-radius: 15px;
+    line-height: 1.4;
+    white-space: pre-wrap; /* Gère les retours à la ligne */
+    word-wrap: break-word; /* Coupe les mots trop longs */
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    transition: background-color 0.3s ease, max-width 0.3s ease;
+    position: relative;
+  }
+  
+  /* -------------------
+     Bulle de l'utilisateur (alignée à droite)
+     ------------------- */
+  .message-bubble.user {
+    align-self: flex-end; /* Aligne la bulle à droite */
+    background-color: #d0ebff;
+    border: 1px solid #b6d4fe;
+    
+    /* Ajustement des paddings */
+    padding-top: 10px;
+    padding-right: 14px;
+    padding-bottom: 6px; /* Réduit le padding inférieur */
+    padding-left: 14px;
+  }
+  
+  .message-bubble.user p {
+    margin: 0; /* Supprime toutes les marges */
+    /* Si vous souhaitez une petite marge, utilisez par exemple : */
+    /* margin-bottom: 2px; */
+  }
+  
+  /* Pseudo-élément pour la flèche de la bulle utilisateur */
+  .message-bubble.user::after {
+    content: "";
+    position: absolute;
+    top: 10px;
+    right: -10px;
+    width: 0;
+    height: 0;
+    border-top: 10px solid transparent;
+    border-left: 10px solid #d0ebff;
+    border-bottom: 10px solid transparent;
+  }
+  
+  /* -------------------
+     Bulle de l'assistant (alignée à gauche)
+     ------------------- */
+  .message-bubble.assistant {
+    align-self: flex-start; /* Aligne la bulle à gauche */
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+  }
+  
+  .message-bubble.assistant::after {
+    content: "";
+    position: absolute;
+    top: 10px;
+    left: -10px;
+    width: 0;
+    height: 0;
+    border-top: 10px solid transparent;
+    border-right: 10px solid #ffffff;
+    border-bottom: 10px solid transparent;
+  }
+  
+  /* -------------------
+     Barre d'envoi en bas
+     ------------------- */
+  .chat-input-container {
+    padding: 1rem;
+    background-color: #fff;
+    border-top: 1px solid #ccc;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  /* Le textarea de saisie dans le chat */
+  #chatInput {
+    flex: 1;
+    resize: none;
+    border: 1px solid #ccc;
+    border-radius: 15px;
+    padding: 10px;
+    outline: none;
+    transition: border-color 0.3s ease;
+  }
+  
+  #chatInput:focus {
+    border-color: #0d6efd;
+  }
+  
+  /* -------------------
+     Stylisation des boutons microphone
+     ------------------- */
+  .btn-outline-secondary {
+    border: none;
+    background: none;
+    font-size: 1.5rem;
+    color: #6c757d;
+    transition: color 0.3s ease;
+  }
+  
+  .btn-outline-secondary:hover {
+    background-color: #e9ecef;
+    border-radius: 50%;
+    color: #0d6efd;
+  }
+  
+  .btn-outline-secondary:focus {
+    box-shadow: none;
+  }
+  
+  /* Stylisation des boutons microphone actifs */
+  #micBtn.active, #micChatBtn.active {
+    color: #0d6efd;
+  }
+  
+  /* -------------------
+     Stylisation améliorée pour le bouton "Continuer la conversation"
+     ------------------- */
+  #continueBtn {
+    background-color: #0d6efd; /* Couleur de fond Bootstrap primaire */
+    color: #ffffff;            /* Couleur du texte */
+    border: none;              /* Supprime la bordure par défaut */
+    border-radius: 8px;        /* Coins légèrement arrondis */
+    padding: 12px 24px;        /* Espacement interne plus grand */
+    font-size: 1.1rem;         /* Taille de police légèrement plus grande */
+    font-weight: 600;          /* Texte en semi-gras */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Ombre portée subtile */
+    transition: background-color 0.3s ease, transform 0.2s ease; /* Transitions douces */
+    cursor: pointer;           /* Curseur pointer au survol */
+  }
+  
+  /* Effet au survol du bouton "Continuer la conversation" */
+  #continueBtn:hover {
+    background-color: #0b5ed7; /* Légère variation de la couleur de fond */
+    transform: translateY(-2px); /* Légère élévation */
+  }
+  
+  /* Effet lors du clic sur le bouton "Continuer la conversation" */
+  #continueBtn:active {
+    background-color: #0a58ca; /* Couleur de fond lors du clic */
+    transform: translateY(0);  /* Réinitialise la transformation */
+  }
+  
+  /* -------------------
+     Ajout d'une marge supplémentaire au conteneur du bouton "Continuer la conversation"
+     ------------------- */
+  #continueRow {
+    margin-bottom: 40px; /* Augmente la marge inférieure */
+    margin-top: 20px;    /* Optionnel : marge supérieure */
+  }
+  
+  /* -------------------
+     Ajout d'un scrollbar personnalisé (optionnel)
+     ------------------- */
+  .chat-window::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  .chat-window::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+  
+  .chat-window::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 4px;
+    border: 2px solid #f1f1f1;
+  }
+  
+  .chat-window::-webkit-scrollbar-thumb:hover {
+    background-color: #b3b3b3;
+  }
+  
