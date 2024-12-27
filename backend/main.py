@@ -8,8 +8,10 @@ import uvicorn
 import os
 from dotenv import load_dotenv
 
-from services.rag_service import ask_with_rag
-from services.chat_service import init_conversation, continue_conversation
+from .services.rag_service import ask_with_rag
+from .services.chat_service import init_conversation, continue_conversation
+
+
 
 # =========================
 # Chargement des variables d'environnement
@@ -29,7 +31,7 @@ app = FastAPI(title="RAG + Chat", version="1.0.0")
 
 # -- Montage des fichiers statiques (CSS, JS, etc.) --
 #   NOTE: on suppose que /static pointe vers ../frontend/static
-app.mount("/static", StaticFiles(directory="../frontend/static"), name="static")
+app.mount("/static", StaticFiles(directory="frontend/static"), name="static")
 
 # -- Middleware de session --
 app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY, session_cookie="session_rag")
