@@ -1,17 +1,14 @@
 # backend/main.py
 
+import os
 from fastapi import FastAPI, Request, HTTPException, Form
 from fastapi.responses import FileResponse, JSONResponse, RedirectResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
-import uvicorn
-import os
 from dotenv import load_dotenv
 
 from .services.rag_service import ask_with_rag
 from .services.chat_service import init_conversation, continue_conversation
-
-
 
 # =========================
 # Chargement des variables d'environnement
@@ -22,16 +19,25 @@ load_dotenv()  # Charge les variables depuis le fichier .env
 VALID_PASSWORD = os.getenv("VALID_PASSWORD", "demo1234")
 SECRET_KEY = os.getenv("SECRET_KEY", "SECRET_KEY_DEMO")
 
-
 # =========================
 # Configuration et app
 # =========================
 
 app = FastAPI(title="RAG + Chat", version="1.0.0")
 
+# -- Définition des chemins absolus dynamiques --
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # Chemin vers /backend
+FRONTEND_DIR = os.path.join(BASE_DIR, "../frontend")    # Chemin vers /frontend
+STATIC_DIR = os.path.join(FRONTEND_DIR, "static")        # Chemin vers /frontend/static
+
+# Vérifiez que les dossiers existent
+if not os.path.exists(FRONTEND_DIR):
+    raise RuntimeError(f"Le dossier frontend '{FRONTEND_DIR}' n'existe pas.")
+if not os.path.exists(STATIC_DIR):
+    raise RuntimeError(f"Le dossier statique '{STATIC_DIR}' n'existe pas.")
+
 # -- Montage des fichiers statiques (CSS, JS, etc.) --
-#   NOTE: on suppose que /static pointe vers ../frontend/static
-app.mount("/static", StaticFiles(directory="frontend/static"), name="static")
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 # -- Middleware de session --
 app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY, session_cookie="session_rag")
@@ -45,7 +51,7 @@ def get_login_page():
     """
     Retourne la page de login (login.html).
     """
-    file_path = "/Users/hugovinuesa/Desktop/Projet_fiscal/code/frontend/login.html"
+    file_path = os.path.join(FRONTEND_DIR, "login.html")
     if not os.path.exists(file_path):
         raise HTTPException(status_code=404, detail="Page login introuvable")
     return FileResponse(file_path)
@@ -76,7 +82,7 @@ def logout(request: Request):
 # Route principale (index)
 # =========================
 
-@app.get("/")
+@app.get("/", response_class=HTMLResponse)
 def serve_index(request: Request):
     """
     Retourne index.html UNIQUEMENT si l'utilisateur est connecté.
@@ -84,7 +90,7 @@ def serve_index(request: Request):
     if not request.session.get("logged_in"):
         return RedirectResponse(url="/login")
 
-    file_path = os.path.join(os.path.dirname(__file__), "../frontend/index.html")
+    file_path = os.path.join(FRONTEND_DIR, "index.html")
     if os.path.exists(file_path):
         return FileResponse(file_path)
     else:

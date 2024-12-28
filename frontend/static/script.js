@@ -7,7 +7,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const questionInput = document.getElementById("questionInput");
   const answerBox = document.getElementById("answerBox");
   const continueRow = document.getElementById("continueRow");
-  const firstQuestionSection = document.getElementById("firstQuestionSection");
 
   // Section chat
   const chatSection = document.getElementById("chatSection");
@@ -29,23 +28,54 @@ document.addEventListener("DOMContentLoaded", () => {
   let recognition;
   let isListening = false;
 
+  // Variables pour accumuler les transcriptions finales
+  let accumulatedFinalTranscriptFirstQuestion = "";
+  let accumulatedFinalTranscriptChat = "";
+
+  // Écouteurs pour détecter les modifications manuelles de l'utilisateur
+  questionInput.addEventListener('input', () => {
+    accumulatedFinalTranscriptFirstQuestion = questionInput.value;
+  });
+
+  chatInput.addEventListener('input', () => {
+    accumulatedFinalTranscriptChat = chatInput.value;
+  });
+
   // Vérification de la compatibilité de l'API Web Speech
   if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     recognition = new SpeechRecognition();
     recognition.lang = 'fr-FR';
-    recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
+    recognition.interimResults = true; // Activer les résultats intermédiaires
+    recognition.continuous = true; // Permettre une reconnaissance continue
 
     // Gestion des résultats de la reconnaissance
     recognition.onresult = (event) => {
-      const transcript = event.results[0][0].transcript.trim();
+      let interimTranscript = '';
+      let finalTranscript = '';
+
+      for (let i = event.resultIndex; i < event.results.length; ++i) {
+        const result = event.results[i];
+        const transcript = result[0].transcript;
+
+        if (result.isFinal) {
+          finalTranscript += transcript + ' ';
+          if (!conversationStarted) {
+            accumulatedFinalTranscriptFirstQuestion += transcript + ' ';
+          } else {
+            accumulatedFinalTranscriptChat += transcript + ' ';
+          }
+        } else {
+          interimTranscript += transcript;
+        }
+      }
+
       if (!conversationStarted) {
-        // Ajout du texte transcrit à la fin de la zone de saisie initiale
-        questionInput.value += (questionInput.value ? ' ' : '') + transcript;
+        // Mettre à jour le champ de saisie avec le texte accumulé + interim
+        questionInput.value = accumulatedFinalTranscriptFirstQuestion + interimTranscript;
       } else {
-        // Ajout du texte transcrit à la fin de la zone de saisie du chat
-        chatInput.value += (chatInput.value ? ' ' : '') + transcript;
+        // Mettre à jour le champ de saisie du chat avec le texte accumulé + interim
+        chatInput.value = accumulatedFinalTranscriptChat + interimTranscript;
       }
     };
 
@@ -53,6 +83,13 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error("Speech recognition error:", event.error);
       alert("Erreur de reconnaissance vocale : " + event.error);
       toggleMic(false, event.target === recognition);
+    };
+
+    recognition.onend = () => {
+      if (isListening) {
+        // Redémarrer la reconnaissance si elle s'arrête involontairement
+        recognition.start();
+      }
     };
   } else {
     // API non supportée
@@ -70,16 +107,20 @@ document.addEventListener("DOMContentLoaded", () => {
       isListening = true;
       if (isChat) {
         micChatBtn.classList.add("active");
+        micChatBtn.title = "Arrêter l'écoute";
       } else {
         micBtn.classList.add("active");
+        micBtn.title = "Arrêter l'écoute";
       }
     } else {
       recognition.stop();
       isListening = false;
       if (isChat) {
         micChatBtn.classList.remove("active");
+        micChatBtn.title = "Activer le micro";
       } else {
         micBtn.classList.remove("active");
+        micBtn.title = "Activer le micro";
       }
     }
   }
@@ -144,11 +185,6 @@ document.addEventListener("DOMContentLoaded", () => {
     answerBox.innerHTML = "";
     // On vide la zone de saisie initiale
     questionInput.value = "";
-
-    // Scroll vers le dernier message ajouté pour éviter que l'utilisateur ait à défiler
-    // Cependant, pour répondre à la demande, on ne force pas le scroll automatique
-    // Donc cette ligne est commentée
-    // chatWindow.scrollTop = chatWindow.scrollHeight;
   });
 
   // --- 3) Gestion du Chat (sans RAG) ---
@@ -221,8 +257,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Scroll automatique uniquement si c'est une réponse de l'assistant
     if (role === "assistant") {
-      // Ne pas forcer le scroll, l'utilisateur peut scroller lui-même
-      // Cependant, si l'utilisateur est déjà en bas, on peut automatiquement scroller
+      // Vérifie si l'utilisateur est déjà en bas
       const isAtBottom = chatWindow.scrollHeight - chatWindow.clientHeight <= chatWindow.scrollTop + 1;
       if (isAtBottom) {
         chatWindow.scrollTop = chatWindow.scrollHeight;

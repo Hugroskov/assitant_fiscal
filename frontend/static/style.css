@@ -175,6 +175,39 @@
     color: #0d6efd;
   }
   
+  .btn.active {
+    background-color: #0d6efd;
+    color: #fff;
+  }
+  
+  .btn.active .bi-mic {
+    color: #fff;
+  }
+  
+  /* Ajout d'une animation pour indiquer l'écoute active */
+  .btn.active::after {
+    content: '';
+    display: block;
+    width: 10px;
+    height: 10px;
+    background: red;
+    border-radius: 50%;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    animation: pulse 1s infinite;
+  }
+  
+  @keyframes pulse {
+    0% {
+      transform: scale(0.8);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1.2);
+      opacity: 0;
+    }
+  }
   /* -------------------
      Stylisation améliorée pour le bouton "Continuer la conversation"
      ------------------- */
